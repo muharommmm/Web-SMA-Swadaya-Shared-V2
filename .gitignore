@@ -1,0 +1,43 @@
+# Website SMA Swadaya
+
+# --- Rahasia server: JANGAN di-push ---
+# Password database, password SMTP, kunci Turnstile. Salin dari .env.example di hosting.
+/.env
+/.env.*
+!/.env.example
+
+# --- Data pribadi pendaftar & data runtime: JANGAN di-push ---
+# Berkas KK/akta/ijazah/pas foto, database SQLite lokal, sesi login, log (berisi email & IP).
+# Hanya .htaccess pelindung tiap folder yang ikut.
+/storage/**
+!/storage/**/
+!/storage/**/.htaccess
+
+# Foto unggahan operator lewat editor konten (memuat wajah siswa).
+# Di hosting, foto diunggah ulang lewat area operator; folder dibuat otomatis.
+/public_html/uploads/*
+
+# --- Dependensi ---
+# vendor/autoload.php ditulis tangan dan WAJIB ikut (proyek tidak memakai composer install).
+/vendor/*
+!/vendor/autoload.php
+composer.phar
+__pycache__/
+
+# --- Cadangan, ekspor, hasil audit ---
+*.sql.gz
+*.bak
+*-audit/
+
+# --- Sistem operasi & editor ---
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+.claude/settings.local.json
+
+# --- Bahan acuan desain (hanya untuk referensi lokal, 6+ MB) ---
+/Referensi/
+/referensi/

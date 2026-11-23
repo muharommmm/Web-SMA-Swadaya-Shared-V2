@@ -1,0 +1,38 @@
+name: Deploy Website to cPanel
+
+# Folder web subdomain = direktori akun FTP (FTP tidak bisa keluar dari folder ini), jadi susunan di server:
+#   <folder web>/                 <- isi public_html/ (index.php, assets/, .htaccess)
+#   <folder web>/_private/        <- app, vendor, database, storage, .env  (ditutup .htaccess, dibaca index.php)
+# Secret FTP_WEB_DIR boleh dikosongkan (default "." = direktori FTP). .env dan storage/ dibuat di server dan tidak pernah disentuh.
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    - name: 📂 Sync files via LFTP
+      run: |
+        sudo apt-get update && sudo apt-get install -y lftp
+        # Tanpa opsi -e: jangan pernah menghapus file di server yang tidak ada di repo (.env, storage, uploads, mail, dll.)
+        lftp -c "
+        set net:timeout 20;
+        set net:max-retries 2;
+        set net:reconnect-interval-base 5;
+        set cmd:fail-exit yes;
+        set ftp:ssl-allow yes;
+        set ssl:verify-certificate no;
+        set ftp:passive-mode yes;
+        open -u ${{ secrets.FTP_USERNAME }},'${{ secrets.FTP_PASSWORD }}' ${{ secrets.FTP_SERVER }};
+        mirror -Rn -P 5 --exclude-glob .git* --exclude-glob .github* --exclude-glob *.md --exclude public_html/ ./ _private/;
+        mirror -Rn -P 5 --exclude-glob .git* public_html/ ${{ secrets.FTP_WEB_DIR || '.' }}/
+        "

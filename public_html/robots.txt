@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /operator
+Disallow: /operator/
+Disallow: /pendaftaran/bukti/
+
+Sitemap: https://sma.swadaya.sch.id/sitemap.xml
+
